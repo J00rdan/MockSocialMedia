@@ -1,5 +1,7 @@
 package com.example.socialnetwork.Controller;
 
+import com.example.socialnetwork.Domain.FriendRequest;
+import com.example.socialnetwork.Domain.FriendRequestDTO;
 import com.example.socialnetwork.Domain.User;
 import com.example.socialnetwork.Domain.Validator.ValidationException;
 import javafx.collections.FXCollections;
@@ -15,7 +17,9 @@ import java.util.List;
 
 public class MenuController extends Controller{
 
-    ObservableList<User> model = FXCollections.observableArrayList();
+    ObservableList<User> friendModel = FXCollections.observableArrayList();
+    ObservableList<FriendRequestDTO> friendRequestsModel = FXCollections.observableArrayList();
+    ObservableList<FriendRequestDTO> sentFriendRequestModel = FXCollections.observableArrayList();
     User user;
 
     @FXML
@@ -37,12 +41,28 @@ public class MenuController extends Controller{
     @FXML
     public TableView<User> friendTableView;
 
+    @FXML
+    public TableColumn<FriendRequestDTO,String> receivedFriendRequestColumn;
+    @FXML
+    public TableColumn<FriendRequestDTO,String> receivedFriendRequestStatus;
+    @FXML
+    public TableView<FriendRequestDTO> receivedFriendRequestTable;
+
+    @FXML
+    public TableColumn<FriendRequestDTO,String> sentFriendRequestColumn;
+    @FXML
+    public TableColumn<FriendRequestDTO,String> sentFriendRequestStatus;
+    @FXML
+    public TableView<FriendRequestDTO> sentFriendRequestTable;
+
     public void sendFriendRequest(){
         String username = friendTextField.getText();
 
         try{
-            if(srv.sendFriendRequest(user.getUsername(), username) == null)
+            if(srv.sendFriendRequest(user.getUsername(), username) == null) {
                 messageLabel.setText("Friend Request Sent!");
+                initModelSentFriendRequestTable();
+            }
         }catch (IllegalArgumentException | ValidationException ex) {
             messageLabel.setText(ex.toString());
         }
@@ -62,16 +82,43 @@ public class MenuController extends Controller{
                 messageLabel.setText(ex.toString());
             }
         }
-
-
     }
 
     public void acceptFriendship(){
-
+        String sender = receivedFriendRequestTable.getSelectionModel().getSelectedItem().getUsername();
+        if(sender == null){
+            messageLabel.setText("Please select a friend request");
+        }
+        else{
+            try{
+                srv.answerRequest(sender, user.getUsername(), "Y");
+                messageLabel.setText("Answer sent!");
+                user = srv.getUserByUsername(user.getUsername());
+                initModelFriendTable();
+                initModelReceivedFriendRequestTable();
+            }catch (IllegalArgumentException | ValidationException ex) {
+                messageLabel.setText(ex.toString());
+            }
+        }
     }
 
     public void declineFriendship(){
-
+        FriendRequestDTO senderDTO = receivedFriendRequestTable.getSelectionModel().getSelectedItem();
+        if(senderDTO == null){
+            messageLabel.setText("Please select a friend request");
+        }
+        else{
+            try{
+                String sender = senderDTO.getUsername();
+                srv.answerRequest(sender, user.getUsername(), "N");
+                messageLabel.setText("Answer sent!");
+                user = srv.getUserByUsername(user.getUsername());
+                initModelFriendTable();
+                initModelReceivedFriendRequestTable();
+            }catch (IllegalArgumentException | ValidationException ex) {
+                messageLabel.setText(ex.toString());
+            }
+        }
     }
 
     @FXML
@@ -82,7 +129,15 @@ public class MenuController extends Controller{
         messageLabel.setAlignment(Pos.CENTER);
 
         friendColumn.setCellValueFactory(new PropertyValueFactory<User, String>("username"));
-        friendTableView.setItems(model);
+        friendTableView.setItems(friendModel);
+
+        receivedFriendRequestColumn.setCellValueFactory(new PropertyValueFactory<FriendRequestDTO, String>("username"));
+        receivedFriendRequestStatus.setCellValueFactory(new PropertyValueFactory<FriendRequestDTO, String>("status"));
+        receivedFriendRequestTable.setItems(friendRequestsModel);
+
+        sentFriendRequestColumn.setCellValueFactory(new PropertyValueFactory<FriendRequestDTO, String>("username"));
+        sentFriendRequestStatus.setCellValueFactory(new PropertyValueFactory<FriendRequestDTO, String>("status"));
+        sentFriendRequestTable.setItems(sentFriendRequestModel);
     }
 
     private void initModelFriendTable(){
@@ -90,12 +145,32 @@ public class MenuController extends Controller{
         for(Long id: user.getFriends()){
             friends.add(srv.getUserByID(id));
         }
-        model.setAll(friends);
+        friendModel.setAll(friends);
+    }
+
+    private void initModelReceivedFriendRequestTable(){
+        List<FriendRequestDTO> friendRequests = new ArrayList<>();
+        for(FriendRequest friendRequest:srv.getReceivedFriendRequest(user)){
+            FriendRequestDTO friendRequestDTO = new FriendRequestDTO(srv.getUserByID(friendRequest.getSenderID()).getUsername(), friendRequest.getStatus());
+            friendRequests.add(friendRequestDTO);
+        }
+        friendRequestsModel.setAll(friendRequests);
+    }
+
+    private void initModelSentFriendRequestTable(){
+        List<FriendRequestDTO> friendRequests = new ArrayList<>();
+        for(FriendRequest friendRequest:srv.getSentFriendRequest(user)){
+            FriendRequestDTO friendRequestDTO = new FriendRequestDTO(srv.getUserByID(friendRequest.getReceiverID()).getUsername(), friendRequest.getStatus());
+            friendRequests.add(friendRequestDTO);
+        }
+        sentFriendRequestModel.setAll(friendRequests);
     }
 
     public void init(User user){
         setUser(user);
         initModelFriendTable();
+        initModelReceivedFriendRequestTable();
+        initModelSentFriendRequestTable();
     }
 
     private void setUser(User user){
