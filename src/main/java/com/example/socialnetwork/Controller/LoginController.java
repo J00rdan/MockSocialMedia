@@ -1,5 +1,6 @@
 package com.example.socialnetwork.Controller;
 
+import com.example.socialnetwork.GUI;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -31,6 +32,12 @@ public class LoginController extends Controller{
             AnchorPane.setRightAnchor(wrongLogin, 0.0);
             wrongLogin.setAlignment(Pos.CENTER);
             wrongLogin.setText("Success");
+
+            try {
+                gui.changeSceneToMenu(srv.getUserByUsername(username));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
         }
         else{
