@@ -77,7 +77,7 @@ public class GUI extends Application {
 
         MenuController menuController = fxmlLoader.getController();
         menuController.setService(srv, this);
-        menuController.setUser(user);
+        menuController.init(user);
 
         stage.getScene().setRoot(pane);
     }

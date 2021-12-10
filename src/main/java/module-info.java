@@ -9,4 +9,5 @@ module com.example.socialnetwork {
 
     exports com.example.socialnetwork;
     exports com.example.socialnetwork.Controller;
+    exports com.example.socialnetwork.Domain;
 }
