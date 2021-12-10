@@ -7,24 +7,31 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.socialnetwork.Controller.MenuController">
+<AnchorPane prefHeight="400.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.socialnetwork.Controller.MenuController">
    <children>
-      <TextField fx:id="friendTextField" layoutX="55.0" layoutY="32.0" prefHeight="25.0" prefWidth="151.0" promptText="Username" />
-      <Button fx:id="friendRequestButton" layoutX="269.0" layoutY="32.0" mnemonicParsing="false" onAction="#sendFriendRequest" text="Send Friend Request" />
-      <Label fx:id="usernameLabel" layoutX="55.0" layoutY="36.0" />
-      <TableView layoutX="55.0" layoutY="79.0" prefHeight="194.0" prefWidth="151.0">
+      <TextField fx:id="friendTextField" layoutX="55.0" layoutY="81.0" prefHeight="25.0" prefWidth="151.0" promptText="Username" />
+      <Button fx:id="friendRequestButton" layoutX="268.0" layoutY="81.0" mnemonicParsing="false" onAction="#sendFriendRequest" text="Send Friend Request" />
+      <TableView fx:id="friendTableView" layoutX="40.0" layoutY="132.0" prefHeight="194.0" prefWidth="151.0">
         <columns>
-          <TableColumn fx:id="friendTable" prefWidth="150.80002403259277" text="Friends" />
+          <TableColumn fx:id="friendColumn" prefWidth="150.80002403259277" text="Friends" />
         </columns>
       </TableView>
-      <TableView fx:id="friendRequestTable" layoutX="365.0" layoutY="79.0" prefHeight="194.0" prefWidth="170.0">
+      <TableView fx:id="friendRequestTable" layoutX="228.0" layoutY="132.0" prefHeight="194.0" prefWidth="205.0">
          <columns>
-            <TableColumn prefWidth="104.0" text="Friend Requests" />
-            <TableColumn prefWidth="68.00006103515625" text="Status" />
+            <TableColumn prefWidth="131.59996032714844" text="Friend Request From" />
+            <TableColumn minWidth="4.79998779296875" prefWidth="72.40001220703124" text="Status" />
          </columns>
       </TableView>
-      <Button fx:id="deleteFriendButton" layoutX="87.0" layoutY="305.0" mnemonicParsing="false" onAction="#deleteFriend" text="Delete Friend" />
-      <Button layoutX="365.0" layoutY="305.0" mnemonicParsing="false" onAction="#acceptFriendship" text="Accept" />
-      <Button layoutX="482.0" layoutY="305.0" mnemonicParsing="false" onAction="#declineFriendship" text="Decline" />
+      <Button fx:id="deleteFriendButton" layoutX="72.0" layoutY="342.0" mnemonicParsing="false" onAction="#deleteFriend" text="Delete Friend" />
+      <Button fx:id="acceptFriendshipButton" layoutX="228.0" layoutY="342.0" mnemonicParsing="false" onAction="#acceptFriendship" text="Accept" />
+      <Button fx:id="declineFriendshipButton" layoutX="377.0" layoutY="342.0" mnemonicParsing="false" onAction="#declineFriendship" text="Decline" />
+      <Label fx:id="usernameLabel" layoutX="55.0" layoutY="27.0" />
+      <Label fx:id="messageLabel" layoutX="116.0" layoutY="378.0" />
+      <TableView fx:id="friendRequestTable1" layoutX="469.0" layoutY="132.0" prefHeight="194.0" prefWidth="205.0">
+         <columns>
+            <TableColumn prefWidth="131.59996032714844" text="Friend Request To" />
+            <TableColumn minWidth="4.79998779296875" prefWidth="72.40001220703124" text="Status" />
+         </columns>
+      </TableView>
    </children>
 </AnchorPane>
