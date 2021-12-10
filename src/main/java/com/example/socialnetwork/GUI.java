@@ -54,7 +54,7 @@ public class GUI extends Application {
         stage = primaryStage;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Login.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+        Scene scene = new Scene(fxmlLoader.load(), 700, 400);
 
         Controller loginController = fxmlLoader.getController();
         loginController.setService(srv, this);
