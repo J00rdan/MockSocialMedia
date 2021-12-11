@@ -12,6 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +61,8 @@ public class MenuController extends Controller{
     @FXML
     public TableView<FriendRequestDTO> sentFriendRequestTable;
 
-    
+    @FXML
+    public Button logoutButton;
 
     public void sendFriendRequest(){
         String username = friendTextField.getText();
@@ -181,6 +183,14 @@ public class MenuController extends Controller{
         initModelFriendTable();
         initModelReceivedFriendRequestTable();
         initModelSentFriendRequestTable();
+    }
+
+    public void logout(){
+        try {
+            gui.changeScene("Login.fxml");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setUser(User user){

@@ -7,7 +7,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="400.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.socialnetwork.Controller.MenuController">
+<AnchorPane prefHeight="447.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.socialnetwork.Controller.MenuController">
    <children>
       <TextField fx:id="friendTextField" layoutX="55.0" layoutY="68.0" prefHeight="25.0" prefWidth="151.0" promptText="Username" />
       <Button fx:id="friendRequestButton" layoutX="68.0" layoutY="106.0" mnemonicParsing="false" onAction="#sendFriendRequest" prefHeight="25.0" prefWidth="126.0" text="Send Friend Request" />
@@ -35,5 +35,6 @@
             <TableColumn fx:id="sentFriendRequestDate" prefWidth="239.60000610351562" text="Date" />
          </columns>
       </TableView>
+      <Button fx:id="logoutButton" layoutX="40.0" layoutY="407.0" mnemonicParsing="false" onAction="#logout" prefHeight="25.0" prefWidth="643.0" text="Logout" />
    </children>
 </AnchorPane>

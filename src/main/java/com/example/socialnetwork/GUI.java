@@ -54,7 +54,7 @@ public class GUI extends Application {
         stage = primaryStage;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Login.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 700, 400);
+        Scene scene = new Scene(fxmlLoader.load(), 700, 450);
 
         Controller loginController = fxmlLoader.getController();
         loginController.setService(srv, this);
@@ -68,6 +68,10 @@ public class GUI extends Application {
     public void changeScene(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fxml));
         Parent pane = fxmlLoader.load();
+
+        Controller loginController = fxmlLoader.getController();
+        loginController.setService(srv, this);
+
         stage.getScene().setRoot(pane);
     }
 
