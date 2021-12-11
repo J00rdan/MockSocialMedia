@@ -12,6 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +47,8 @@ public class MenuController extends Controller{
     @FXML
     public TableColumn<FriendRequestDTO,String> receivedFriendRequestStatus;
     @FXML
+    public TableColumn<FriendRequestDTO,LocalDateTime> receivedFriendRequestDate;
+    @FXML
     public TableView<FriendRequestDTO> receivedFriendRequestTable;
 
     @FXML
@@ -53,7 +56,11 @@ public class MenuController extends Controller{
     @FXML
     public TableColumn<FriendRequestDTO,String> sentFriendRequestStatus;
     @FXML
+    public TableColumn<FriendRequestDTO,LocalDateTime> sentFriendRequestDate;
+    @FXML
     public TableView<FriendRequestDTO> sentFriendRequestTable;
+
+    
 
     public void sendFriendRequest(){
         String username = friendTextField.getText();
@@ -85,12 +92,13 @@ public class MenuController extends Controller{
     }
 
     public void acceptFriendship(){
-        String sender = receivedFriendRequestTable.getSelectionModel().getSelectedItem().getUsername();
-        if(sender == null){
+        FriendRequestDTO senderDTO = receivedFriendRequestTable.getSelectionModel().getSelectedItem();
+        if(senderDTO == null){
             messageLabel.setText("Please select a friend request");
         }
         else{
             try{
+                String sender = senderDTO.getUsername();
                 srv.answerRequest(sender, user.getUsername(), "Y");
                 messageLabel.setText("Answer sent!");
                 user = srv.getUserByUsername(user.getUsername());
@@ -133,10 +141,12 @@ public class MenuController extends Controller{
 
         receivedFriendRequestColumn.setCellValueFactory(new PropertyValueFactory<FriendRequestDTO, String>("username"));
         receivedFriendRequestStatus.setCellValueFactory(new PropertyValueFactory<FriendRequestDTO, String>("status"));
+        receivedFriendRequestDate.setCellValueFactory(new PropertyValueFactory<FriendRequestDTO, LocalDateTime>("date"));
         receivedFriendRequestTable.setItems(friendRequestsModel);
 
         sentFriendRequestColumn.setCellValueFactory(new PropertyValueFactory<FriendRequestDTO, String>("username"));
         sentFriendRequestStatus.setCellValueFactory(new PropertyValueFactory<FriendRequestDTO, String>("status"));
+        sentFriendRequestDate.setCellValueFactory(new PropertyValueFactory<FriendRequestDTO, LocalDateTime>("date"));
         sentFriendRequestTable.setItems(sentFriendRequestModel);
     }
 
@@ -151,7 +161,7 @@ public class MenuController extends Controller{
     private void initModelReceivedFriendRequestTable(){
         List<FriendRequestDTO> friendRequests = new ArrayList<>();
         for(FriendRequest friendRequest:srv.getReceivedFriendRequest(user)){
-            FriendRequestDTO friendRequestDTO = new FriendRequestDTO(srv.getUserByID(friendRequest.getSenderID()).getUsername(), friendRequest.getStatus());
+            FriendRequestDTO friendRequestDTO = new FriendRequestDTO(srv.getUserByID(friendRequest.getSenderID()).getUsername(), friendRequest.getStatus(), friendRequest.getDate());
             friendRequests.add(friendRequestDTO);
         }
         friendRequestsModel.setAll(friendRequests);
@@ -160,7 +170,7 @@ public class MenuController extends Controller{
     private void initModelSentFriendRequestTable(){
         List<FriendRequestDTO> friendRequests = new ArrayList<>();
         for(FriendRequest friendRequest:srv.getSentFriendRequest(user)){
-            FriendRequestDTO friendRequestDTO = new FriendRequestDTO(srv.getUserByID(friendRequest.getReceiverID()).getUsername(), friendRequest.getStatus());
+            FriendRequestDTO friendRequestDTO = new FriendRequestDTO(srv.getUserByID(friendRequest.getReceiverID()).getUsername(), friendRequest.getStatus(), friendRequest.getDate());
             friendRequests.add(friendRequestDTO);
         }
         sentFriendRequestModel.setAll(friendRequests);

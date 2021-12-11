@@ -7,6 +7,7 @@ import com.example.socialnetwork.Domain.Validator.Validator;
 import com.example.socialnetwork.Repository.Repository;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -34,8 +35,9 @@ public class FriendRequestDBRepository implements Repository<Long, FriendRequest
             Long senderID = resultSet.getLong("sender_id");
             Long receiverID = resultSet.getLong("receiver_id");
             String status = resultSet.getString("status");
+            String date = resultSet.getString("date");
 
-            FriendRequest friendRequest = new FriendRequest(senderID, receiverID, status);
+            FriendRequest friendRequest = new FriendRequest(senderID, receiverID, status, LocalDateTime.parse(date));
             friendRequest.setId(id);
 
             return friendRequest;
@@ -46,7 +48,7 @@ public class FriendRequestDBRepository implements Repository<Long, FriendRequest
     }
 
     private String createEntityAsString(FriendRequest entity) {
-        return entity.getId()+";"+entity.getSenderID()+";"+entity.getReceiverID()+";"+entity.getStatus();
+        return entity.getId()+";"+entity.getSenderID()+";"+entity.getReceiverID()+";"+entity.getStatus()+";"+entity.getDate();
     }
 
     @Override
@@ -99,7 +101,7 @@ public class FriendRequestDBRepository implements Repository<Long, FriendRequest
         if(findOne(entity.getId()) != null)
             return entity;
 
-        String sql = "insert into friend_requests (id, sender_id, receiver_id, status) values (?, ?, ?, ?)";
+        String sql = "insert into friend_requests (id, sender_id, receiver_id, status, date) values (?, ?, ?, ?, ?)";
         try (Connection connection = DriverManager.getConnection(url, username, password);
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
@@ -109,6 +111,7 @@ public class FriendRequestDBRepository implements Repository<Long, FriendRequest
             ps.setInt(2, Integer.parseInt(attributes.get(1)));
             ps.setInt(3, Integer.parseInt(attributes.get(2)));
             ps.setString(4, attributes.get(3));
+            ps.setString(5, attributes.get(4));
 
             ps.executeUpdate();
 
@@ -149,7 +152,7 @@ public class FriendRequestDBRepository implements Repository<Long, FriendRequest
         validator.validate(entity);
 
         if(findOne(entity.getId()) != null){
-            String sql = "update friend_requests set sender_id=(?),receiver_id=(?),status=(?) where id = (?)";
+            String sql = "update friend_requests set sender_id=(?),receiver_id=(?),status=(?),date=(?) where id = (?)";
             try (Connection connection = DriverManager.getConnection(url, username, password);
                  PreparedStatement ps = connection.prepareStatement(sql)) {
 
@@ -158,7 +161,8 @@ public class FriendRequestDBRepository implements Repository<Long, FriendRequest
                 ps.setInt(1,Integer.parseInt(attributes.get(1)));
                 ps.setInt(2,Integer.parseInt(attributes.get(2)));
                 ps.setString(3,attributes.get(3));
-                ps.setInt(4,Integer.parseInt(attributes.get(0)));
+                ps.setString(4,attributes.get(4));
+                ps.setInt(5,Integer.parseInt(attributes.get(0)));
 
                 ps.executeUpdate();
                 return null;
