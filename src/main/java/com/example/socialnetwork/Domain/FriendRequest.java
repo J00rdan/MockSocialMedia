@@ -1,23 +1,34 @@
 package com.example.socialnetwork.Domain;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class FriendRequest extends Entity<Long>{
     private Long senderID;
     private Long receiverID;
     private String status;
+    private LocalDateTime date;
 
 
     public FriendRequest(Long senderID, Long receiverID) {
         this.senderID = senderID;
         this.receiverID = receiverID;
         this.status = "Pending";
+        this.date = LocalDateTime.now();
     }
 
     public FriendRequest(Long senderID, Long receiverID, String status) {
         this.senderID = senderID;
         this.receiverID = receiverID;
         this.status = status;
+        this.date = LocalDateTime.now();
+    }
+
+    public FriendRequest(Long senderID, Long receiverID, String status, LocalDateTime date) {
+        this.senderID = senderID;
+        this.receiverID = receiverID;
+        this.status = status;
+        this.date = date;
     }
 
 
@@ -67,5 +78,13 @@ public class FriendRequest extends Entity<Long>{
                 ", receiverID=" + receiverID +
                 ", status='" + status + '\'' +
                 '}';
+    }
+
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDateTime date) {
+        this.date = date;
     }
 }
