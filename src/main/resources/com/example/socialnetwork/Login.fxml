@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
+
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.socialnetwork.Controller.LoginController">
     <left>
         <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
@@ -39,6 +44,7 @@
                 <PasswordField fx:id="passwordField" layoutX="158.0" layoutY="202.0" prefHeight="25.0" prefWidth="146.0" promptText="Password" />
                 <Button fx:id="loginButton" layoutX="124.0" layoutY="268.0" mnemonicParsing="false" onAction="#userLogin" prefHeight="28.0" prefWidth="67.0" style="-fx-background-color: #ffc900;" text="Login" />
                 <Label fx:id="wrongLogin" layoutX="144.0" layoutY="85.0" textFill="RED" />
+            <Button fx:id="createAccountButton" layoutX="97.0" layoutY="337.0" mnemonicParsing="false" onAction="#createAccountMenu" prefHeight="28.0" prefWidth="121.0" style="-fx-background-color: #ffc900;" text="Create Account" />
             </children>
         </AnchorPane>
     </right>

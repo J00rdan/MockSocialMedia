@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.socialnetwork.Controller.NewAccountController">
+    <left>
+        <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <children>
+                <ImageView fitHeight="353.0" fitWidth="275.0" layoutY="44.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../../../img/ebc093906245913fa3d9e78d60fc3d8f.jpg" />
+                    </image>
+                </ImageView>
+            </children>
+        </AnchorPane>
+    </left>
+    <right>
+        <AnchorPane prefHeight="400.0" prefWidth="316.0" BorderPane.alignment="CENTER">
+            <children>
+                <ImageView fitHeight="24.0" fitWidth="25.0" layoutX="146.0" layoutY="43.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../../../img/lock.png" />
+                    </image>
+                </ImageView>
+                <Label layoutX="34.0" layoutY="87.0" text="First Name" textFill="#ffc900">
+                    <font>
+                        <Font name="System Bold" size="20.0" />
+                    </font>
+                </Label>
+                <Label layoutX="34.0" layoutY="238.0" text="Password" textFill="#ffc900">
+                    <font>
+                        <Font name="System Bold" size="20.0" />
+                    </font>
+                </Label>
+                <TextField fx:id="firstNameField" layoutX="158.0" layoutY="89.0" prefHeight="25.0" prefWidth="146.0" promptText="First Name" />
+                <PasswordField fx:id="passwordField" layoutX="158.0" layoutY="240.0" prefHeight="25.0" prefWidth="146.0" promptText="Password" />
+                <Button fx:id="createAccountButton" layoutX="105.0" layoutY="335.0" mnemonicParsing="false" onAction="#createAccount" prefHeight="28.0" prefWidth="106.0" style="-fx-background-color: #ffc900;" text="Create Account" />
+                <Label fx:id="wrongLogin" layoutX="142.0" layoutY="296.0" prefHeight="17.0" prefWidth="31.0" textFill="RED" />
+            <Label layoutX="34.0" layoutY="133.0" text="Last Name" textFill="#ffc900">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Label>
+            <TextField fx:id="lastNameField" layoutX="158.0" layoutY="135.0" prefHeight="25.0" prefWidth="146.0" promptText="Last Name" />
+            <Label layoutX="33.0" layoutY="184.0" text="Username" textFill="#ffc900">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Label>
+            <TextField fx:id="usernameField" layoutX="158.0" layoutY="186.0" prefHeight="25.0" prefWidth="146.0" promptText="Username" />
+            </children>
+        </AnchorPane>
+    </right>
+</BorderPane>

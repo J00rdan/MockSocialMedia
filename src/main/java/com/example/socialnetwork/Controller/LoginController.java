@@ -16,6 +16,8 @@ public class LoginController extends Controller{
     @FXML
     public Button loginButton;
     @FXML
+    public Button createAccountButton;
+    @FXML
     public TextField usernameField;
     @FXML
     public PasswordField passwordField;
@@ -49,5 +51,13 @@ public class LoginController extends Controller{
 
         }
 
+    }
+
+    public void createAccountMenu(){
+        try {
+            gui.changeScene("NewAccount.fxml");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
