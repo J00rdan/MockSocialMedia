@@ -27,5 +27,7 @@ public class HelloApplication{
 
         GUI gui = new GUI();
         gui.run();
+
+        //asd
     }
 }
