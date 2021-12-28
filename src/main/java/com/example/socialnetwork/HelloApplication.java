@@ -22,33 +22,12 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class HelloApplication extends Application {
-    @Override
-    public void start(Stage stage) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
-        stage.setTitle("Hello!");
-        stage.setScene(scene);
-        stage.show();
-    }
-
+public class HelloApplication{
     public static void main(String[] args) {
-        //launch();
-        String password = "postgres";
-        Repository<Long, User> userDBRepository = new UserDBRepository("jdbc:postgresql://localhost:5432/SocialNetwork",
-                "postgres", password, new UserValidator());
-        Repository<Long, Friendship> friendshipRepository = new FriendshipDBRepository("jdbc:postgresql://localhost:5432/SocialNetwork",
-                "postgres", password, new FriendshipValidator());
-        Repository<Long, Message> messageRepository = new MessageDBRepository("jdbc:postgresql://localhost:5432/SocialNetwork",
-                "postgres",password,new MessageValidator());
 
-        Repository<Long, FriendRequest> friendRequestDBRepository = new FriendRequestDBRepository("jdbc:postgresql://localhost:5432/SocialNetwork",
-                "postgres", password, new FriendRequestValidator());
+        GUI gui = new GUI();
+        gui.run();
 
-
-        Service srv = new Service(userDBRepository, friendshipRepository, messageRepository, friendRequestDBRepository);
-
-        UI ui = new UI(srv);
-        ui.run();
+        //asd
     }
 }
