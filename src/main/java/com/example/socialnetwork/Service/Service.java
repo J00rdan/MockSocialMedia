@@ -401,6 +401,26 @@ public class Service {
 
         throw new EntityNotFoundException("Nonexistent Friend Request!");
     }
+
+    private Long findRequestIdBySenderReceiver(Long sender, Long receiver)
+    {
+        Iterable<FriendRequest> requests = friendRequestRepository.findAll();
+        for (FriendRequest fr : requests)
+            if (sender.equals(fr.getSenderID()) && receiver.equals(fr.getReceiverID()) && fr.getStatus().equals("Pending"))
+                return fr.getId();
+        return null;
+    }
+
+    public FriendRequest deleteFriendRequest(String sender, String receiver)
+    {
+        Long id1 = this.getIDbyUsername(sender);
+        Long id2 = this.getIDbyUsername(receiver);
+        Long idToDelete = this.findRequestIdBySenderReceiver(id1,id2);
+        if (idToDelete != null)
+            return friendRequestRepository.delete(idToDelete);
+        throw new EntityNotFoundException("Nonexistent FriendRequest!");
+    }
+
     public void getFriendshipsOfUserByMonth(String username, int monthNumber){
         if(getUserByUsername(username) == null)
             throw new EntityNotFoundException("Nonexistent User");
