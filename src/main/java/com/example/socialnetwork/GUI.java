@@ -1,7 +1,7 @@
 package com.example.socialnetwork;
 
 import com.example.socialnetwork.Controller.Controller;
-import com.example.socialnetwork.Controller.LoginController;
+import com.example.socialnetwork.Controller.ItemController;
 import com.example.socialnetwork.Controller.MenuController;
 import com.example.socialnetwork.Domain.FriendRequest;
 import com.example.socialnetwork.Domain.Friendship;
@@ -19,6 +19,7 @@ import com.example.socialnetwork.Repository.Repository;
 import com.example.socialnetwork.Service.Service;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -28,6 +29,7 @@ import java.io.IOException;
 public class GUI extends Application {
     private Service srv;
     private static Stage stage;
+    private MenuController menuController;
 
     public GUI(){
         setService();
@@ -54,7 +56,7 @@ public class GUI extends Application {
         stage = primaryStage;
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Login.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 700, 450);
+        Scene scene = new Scene(fxmlLoader.load(), 1050, 600);
 
         Controller loginController = fxmlLoader.getController();
         loginController.setService(srv, this);
@@ -76,14 +78,44 @@ public class GUI extends Application {
     }
 
     public void changeSceneToMenu(User user) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Menu.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Menu2.fxml"));
         Parent pane = fxmlLoader.load();
 
-        MenuController menuController = fxmlLoader.getController();
+        menuController = fxmlLoader.getController();
         menuController.setService(srv, this);
         menuController.init(user);
 
         stage.getScene().setRoot(pane);
+    }
+
+    public Node[] loadFriends(User user) throws IOException{
+        Node[] nodes = new Node[user.getFriends().size()];
+
+        int i = 0;
+
+        for(long id:user.getFriends()){
+            final int j = i;
+
+            User friend = srv.getUserByID(id);
+
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("Item.fxml"));
+            nodes[i] = fxmlLoader.load();
+
+            ItemController itemController = fxmlLoader.getController();
+            itemController.setService(srv, this);
+            itemController.init(user, friend, menuController);
+
+            nodes[i].setOnMouseEntered(event -> {
+                nodes[j].setStyle("-fx-background-color : #0A0E3F");
+            });
+            nodes[i].setOnMouseExited(event -> {
+                nodes[j].setStyle("-fx-background-color : #02030A");
+            });
+
+            i++;
+
+        }
+        return nodes;
     }
 
     public void run(){
