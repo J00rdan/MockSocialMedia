@@ -27,6 +27,9 @@ public class SentItemController extends Controller{
     }
 
     public void undoFriendRequest(){
-
+        if(friendRequest.getStatus().equals("Pending")) {
+            srv.deleteFriendRequest(friendRequest);
+            menuController.initSentFriendRequest(user);
+        }
     }
 }

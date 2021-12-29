@@ -286,8 +286,8 @@ public class Service {
         user1.addFriend(user2);
         user2.addFriend(user1);
 
-        System.out.println(userRepository.findOne(id1));
-        System.out.println(userRepository.findOne(id2));
+        //System.out.println(userRepository.findOne(id1));
+        //System.out.println(userRepository.findOne(id2));
         userRepository.update(user1);
         userRepository.update(user2);
 
@@ -402,23 +402,9 @@ public class Service {
         throw new EntityNotFoundException("Nonexistent Friend Request!");
     }
 
-    private Long findRequestIdBySenderReceiver(Long sender, Long receiver)
+    public FriendRequest deleteFriendRequest(FriendRequest friendRequest)
     {
-        Iterable<FriendRequest> requests = friendRequestRepository.findAll();
-        for (FriendRequest fr : requests)
-            if (sender.equals(fr.getSenderID()) && receiver.equals(fr.getReceiverID()) && fr.getStatus().equals("Pending"))
-                return fr.getId();
-        return null;
-    }
-
-    public FriendRequest deleteFriendRequest(String sender, String receiver)
-    {
-        Long id1 = this.getIDbyUsername(sender);
-        Long id2 = this.getIDbyUsername(receiver);
-        Long idToDelete = this.findRequestIdBySenderReceiver(id1,id2);
-        if (idToDelete != null)
-            return friendRequestRepository.delete(idToDelete);
-        throw new EntityNotFoundException("Nonexistent FriendRequest!");
+        return friendRequestRepository.delete(friendRequest.getId());
     }
 
     public void getFriendshipsOfUserByMonth(String username, int monthNumber){
