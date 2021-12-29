@@ -5,6 +5,7 @@ import com.example.socialnetwork.Domain.FriendRequest;
 import com.example.socialnetwork.Domain.FriendRequestDTO;
 import com.example.socialnetwork.Domain.User;
 import com.example.socialnetwork.Domain.Validator.ValidationException;
+import com.example.socialnetwork.Utils.Events.UserAddedEvent;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -25,7 +26,7 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.*;
 
-public class MenuController extends Controller {
+public class MenuController extends Controller implements com.example.socialnetwork.Utils.Observer.Observer<UserAddedEvent> {
     User user;
 
     @FXML
@@ -73,12 +74,12 @@ public class MenuController extends Controller {
     public void init(User user) {
         setUser(user);
         initOverview(user);
+        pnlOverview.toFront();
     }
 
     private void initOverview(User user){
         numberOfFriends.setText(String.valueOf(user.getFriends().size()));
 
-        pnlOverview.toFront();
         pnItems.getChildren().clear();
 
         try {
@@ -97,7 +98,7 @@ public class MenuController extends Controller {
 
         numberOfUsers.setText(String.valueOf(count));
 
-        pnlSearch.toFront();
+
         pnItemsFriend.getChildren().clear();
 
         try {
@@ -116,7 +117,7 @@ public class MenuController extends Controller {
 
         numberOfSentFriendRequest.setText(String.valueOf(count));
 
-        pnlSentFriendRequest.toFront();
+
         pnSentItems.getChildren().clear();
 
         try {
@@ -135,7 +136,7 @@ public class MenuController extends Controller {
 
         numberOfReceivedFriendRequest.setText(String.valueOf(count));
 
-        pnlReceivedFriendRequest.toFront();
+
         pnReceivedItems.getChildren().clear();
 
         try {
@@ -151,18 +152,22 @@ public class MenuController extends Controller {
     public void handleClicks(ActionEvent actionEvent){
         if (actionEvent.getSource() == btnSearch) {
             initSearch(user);
+            pnlSearch.toFront();
         }
         if (actionEvent.getSource() == btnOverview) {
             user = srv.getUserByUsername(user.getUsername());
             init(user);
             initOverview(user);
+            pnlOverview.toFront();
         }
         if (actionEvent.getSource() == btnSentFriendRequest) {
             initSentFriendRequest(user);
+            pnlSentFriendRequest.toFront();
         }
         if (actionEvent.getSource() == btnReceivedFriendRequest) {
             initReceivedFriendRequest(user);
             user = srv.getUserByUsername(user.getUsername());
+            pnlReceivedFriendRequest.toFront();
         }
             /*if (actionEvent.getSource() == btnMenus) {
                 pnlMenus.setStyle("-fx-background-color : #53639F");
@@ -184,6 +189,16 @@ public class MenuController extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void update(UserAddedEvent userAddedEvent) {
+        user = srv.getUserByUsername(user.getUsername());
+        init(user);
+        initOverview(user);
+        initSearch(user);
+        initSentFriendRequest(user);
+        initReceivedFriendRequest(user);
     }
 
     /*ObservableList<User> friendModel = FXCollections.observableArrayList();
