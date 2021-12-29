@@ -286,8 +286,8 @@ public class Service {
         user1.addFriend(user2);
         user2.addFriend(user1);
 
-        System.out.println(userRepository.findOne(id1));
-        System.out.println(userRepository.findOne(id2));
+        //System.out.println(userRepository.findOne(id1));
+        //System.out.println(userRepository.findOne(id2));
         userRepository.update(user1);
         userRepository.update(user2);
 
@@ -401,6 +401,12 @@ public class Service {
 
         throw new EntityNotFoundException("Nonexistent Friend Request!");
     }
+
+    public FriendRequest deleteFriendRequest(FriendRequest friendRequest)
+    {
+        return friendRequestRepository.delete(friendRequest.getId());
+    }
+
     public void getFriendshipsOfUserByMonth(String username, int monthNumber){
         if(getUserByUsername(username) == null)
             throw new EntityNotFoundException("Nonexistent User");

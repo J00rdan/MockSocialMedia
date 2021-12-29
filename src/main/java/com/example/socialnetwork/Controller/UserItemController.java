@@ -8,14 +8,14 @@ import javafx.scene.control.Label;
 
 import java.io.IOException;
 
-public class ItemController extends Controller{
+public class UserItemController extends Controller{
     private User user;
     private User friend;
     private MenuController menuController;
 
     public Label friendName;
     @FXML
-    public Button btnDeleteFriend;
+    public Button btnAddFriend;
 
     public void init(User user, User friend, MenuController menuController) {
         this.user = user;
@@ -24,11 +24,11 @@ public class ItemController extends Controller{
         this.menuController = menuController;
     }
 
-    public void deleteFriend(){
+    public void sendFriendRequest(){
         try{
-            srv.removeFriendship(user.getUsername(), friend.getUsername());
-            user = srv.getUserById(user.getId());
-            menuController.init(user);
+            srv.sendFriendRequest(user.getUsername(), friend.getUsername());
+            /*user = srv.getUserById(user.getId());
+            menuController.init(user);*/
             //messageLabel.setText("Friend Removed");
             //initModelFriendTable();
         }catch (IllegalArgumentException | ValidationException ex) {

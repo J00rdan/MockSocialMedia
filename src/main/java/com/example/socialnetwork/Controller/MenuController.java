@@ -5,8 +5,10 @@ import com.example.socialnetwork.Domain.FriendRequest;
 import com.example.socialnetwork.Domain.FriendRequestDTO;
 import com.example.socialnetwork.Domain.User;
 import com.example.socialnetwork.Domain.Validator.ValidationException;
+import com.example.socialnetwork.Utils.Events.UserAddedEvent;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -16,17 +18,15 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
 
-public class MenuController extends Controller {
+public class MenuController extends Controller implements com.example.socialnetwork.Utils.Observer.Observer<UserAddedEvent> {
     User user;
 
     @FXML
@@ -34,28 +34,153 @@ public class MenuController extends Controller {
     @FXML
     public Label numberOfFriends;
     @FXML
+    public Label numberOfUsers;
+    @FXML
+    public Label numberOfSentFriendRequest;
+    @FXML
+    public Label numberOfReceivedFriendRequest;
+    @FXML
     public Button btnLogout;
     @FXML
+    public Button btnOverview;
+    @FXML
+    public Button btnSearch;
+    @FXML
+    public Button btnSentFriendRequest;
+    @FXML
+    public Button btnReceivedFriendRequest;
+    @FXML
+    public Pane pnlSearch;
+    @FXML
+    public Pane pnlOverview;
+    @FXML
+    public Pane pnlSentFriendRequest;
+    @FXML
+    public Pane pnlReceivedFriendRequest;
+    @FXML
     public VBox pnItems;
+    @FXML
+    public VBox pnItemsFriend;
+    @FXML
+    public VBox pnSentItems;
+    @FXML
+    public VBox pnReceivedItems;
 
     private void setUser(User user){
         this.user = user;
         usernameLabel.setText(user.getUsername());
-        numberOfFriends.setText(String.valueOf(user.getFriends().size()));
     }
 
-    public void init(User user) throws IOException {
-        pnItems.getChildren().clear();
+    public void init(User user) {
         setUser(user);
+        initOverview(user);
+        pnlOverview.toFront();
+    }
 
-        for(Node node: gui.loadFriends(user)){
-            pnItems.getChildren().add(node);
+    private void initOverview(User user){
+        numberOfFriends.setText(String.valueOf(user.getFriends().size()));
+
+        pnItems.getChildren().clear();
+
+        try {
+            for(Node node: gui.loadFriends(user)){
+                pnItems.getChildren().add(node);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initSearch(User user){
+        int count = 0;
+        for(User u:srv.getAllUsers())
+            count++;
+
+        numberOfUsers.setText(String.valueOf(count));
+
+
+        pnItemsFriend.getChildren().clear();
+
+        try {
+            for(Node node: gui.loadUsers(count, user)){
+                pnItemsFriend.getChildren().add(node);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void initSentFriendRequest(User user){
+        int count = 0;
+        for(FriendRequest fr: srv.getSentFriendRequest(user))
+            count++;
+
+        numberOfSentFriendRequest.setText(String.valueOf(count));
+
+
+        pnSentItems.getChildren().clear();
+
+        try {
+            for(Node node: gui.loadSentFriendRequest(count, user)){
+                pnSentItems.getChildren().add(node);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void initReceivedFriendRequest(User user){
+        int count = 0;
+        for(FriendRequest fr: srv.getReceivedFriendRequest(user))
+            count++;
+
+        numberOfReceivedFriendRequest.setText(String.valueOf(count));
+
+
+        pnReceivedItems.getChildren().clear();
+
+        try {
+            for(Node node: gui.loadReceivedFriendRequest(count, user)){
+                pnReceivedItems.getChildren().add(node);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
 
-    public void handleClicks(){
-
+    public void handleClicks(ActionEvent actionEvent){
+        if (actionEvent.getSource() == btnSearch) {
+            initSearch(user);
+            pnlSearch.toFront();
+        }
+        if (actionEvent.getSource() == btnOverview) {
+            user = srv.getUserByUsername(user.getUsername());
+            init(user);
+            initOverview(user);
+            pnlOverview.toFront();
+        }
+        if (actionEvent.getSource() == btnSentFriendRequest) {
+            initSentFriendRequest(user);
+            pnlSentFriendRequest.toFront();
+        }
+        if (actionEvent.getSource() == btnReceivedFriendRequest) {
+            initReceivedFriendRequest(user);
+            user = srv.getUserByUsername(user.getUsername());
+            pnlReceivedFriendRequest.toFront();
+        }
+            /*if (actionEvent.getSource() == btnMenus) {
+                pnlMenus.setStyle("-fx-background-color : #53639F");
+                pnlMenus.toFront();
+            }
+            if (actionEvent.getSource() == btnOverview) {
+                pnlOverview.setStyle("-fx-background-color : #02030A");
+                pnlOverview.toFront();
+            }
+            if(actionEvent.getSource()==btnOrders) {
+                pnlOrders.setStyle("-fx-background-color : #464F67");
+                pnlOrders.toFront();
+            }*/
     }
 
     public void logout(){
@@ -64,6 +189,16 @@ public class MenuController extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void update(UserAddedEvent userAddedEvent) {
+        user = srv.getUserByUsername(user.getUsername());
+        init(user);
+        initOverview(user);
+        initSearch(user);
+        initSentFriendRequest(user);
+        initReceivedFriendRequest(user);
     }
 
     /*ObservableList<User> friendModel = FXCollections.observableArrayList();
