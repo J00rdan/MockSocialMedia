@@ -7,11 +7,17 @@ import com.example.socialnetwork.Domain.Validator.EntityNotFoundException;
 import com.example.socialnetwork.Domain.Validator.ValidationException;
 import com.example.socialnetwork.Repository.Repository;
 import com.example.socialnetwork.Utils.ComparatorByDate;
+import com.example.socialnetwork.Utils.Events.ChangeEventType;
+import com.example.socialnetwork.Utils.Events.UserAddedEvent;
 import com.example.socialnetwork.Utils.Graph;
+import com.example.socialnetwork.Utils.Observer.Observable;
+import com.example.socialnetwork.Utils.Observer.Observer;
 
 import java.util.*;
 
-public class Service {
+public class Service implements Observable<UserAddedEvent> {
+    private List<Observer<UserAddedEvent>> observers=new ArrayList<>();
+
     private Repository<Long, User> userRepository;
     private Repository<Long, Friendship> friendshipRepository;
     private Repository<Long, Message> messageRepository;
@@ -109,7 +115,12 @@ public class Service {
         user.setId(userId);
         userId++;
 
-        return userRepository.save(user);
+        if(userRepository.save(user) == null){
+            System.out.println("Notify");
+            notifyObservers(new UserAddedEvent(ChangeEventType.ADD,getAllUsers()));
+            return null;
+        }
+        return user;
     }
 
     public String stringReceivedMessage(Message mess)
@@ -317,6 +328,8 @@ public class Service {
         userRepository.update(user1);
         userRepository.update(user2);
 
+        notifyObservers(new UserAddedEvent(ChangeEventType.DELETE,getAllUsers()));
+
         for(Friendship friendship:getAllFriendships()){
             if((Objects.equals(friendship.getID1(), id1) && friendship.getID2().equals(id2)) || (friendship.getID1().equals(id2) && friendship.getID2().equals(id1)))
                 return friendshipRepository.delete(friendship.getId());
@@ -353,7 +366,9 @@ public class Service {
         FriendRequest friendRequest = new FriendRequest(id1, id2, "Pending");
         friendRequest.setId(friendRequestId);
         friendRequestId++;
-        return friendRequestRepository.save(friendRequest);
+        if(friendRequestRepository.save(friendRequest) == null)
+            notifyObservers(new UserAddedEvent(ChangeEventType.ADD,getAllUsers()));
+        return friendRequest;
     }
 
     public Iterable<FriendRequest> getSentFriendRequest(User user){
@@ -389,6 +404,7 @@ public class Service {
                     addFriendship(sender, receiver);
                 } else friendRequest.setStatus("Rejected");
                 friendRequestRepository.update(friendRequest);
+                notifyObservers(new UserAddedEvent(ChangeEventType.UPDATE,getAllUsers()));
                 return friendRequest;
             }
         }
@@ -404,6 +420,7 @@ public class Service {
 
     public FriendRequest deleteFriendRequest(FriendRequest friendRequest)
     {
+        notifyObservers(new UserAddedEvent(ChangeEventType.DELETE,getAllUsers()));
         return friendRequestRepository.delete(friendRequest.getId());
     }
 
@@ -490,6 +507,23 @@ public class Service {
         }
         return g.maxConnectedComponents().size();
 
+    }
+
+    @Override
+    public void addObserver(Observer<UserAddedEvent> e) {
+        observers.add(e);
+        System.out.println("ADDed");
+    }
+
+    @Override
+    public void removeObserver(Observer<UserAddedEvent> e) {
+        //observers.remove(e);
+    }
+
+    @Override
+    public void notifyObservers(UserAddedEvent t) {
+        observers.stream().forEach(x->System.out.println("notify observers"));
+        observers.stream().forEach(x->x.update(t));
     }
 }
 
