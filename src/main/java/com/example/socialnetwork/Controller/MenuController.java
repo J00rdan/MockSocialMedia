@@ -97,7 +97,6 @@ public class MenuController extends Controller implements com.example.socialnetw
     }
 
     private void initSearch(User user){
-        System.out.println("initSearch");
         int count = 0;
         for(User u:srv.getAllUsers())
             count++;

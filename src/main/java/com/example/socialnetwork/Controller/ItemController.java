@@ -27,8 +27,8 @@ public class ItemController extends Controller{
     public void deleteFriend(){
         try{
             srv.removeFriendship(user.getUsername(), friend.getUsername());
-            user = srv.getUserById(user.getId());
-            menuController.init(user);
+            //user = srv.getUserById(user.getId());
+            //menuController.init(user);
             //messageLabel.setText("Friend Removed");
             //initModelFriendTable();
         }catch (IllegalArgumentException | ValidationException ex) {

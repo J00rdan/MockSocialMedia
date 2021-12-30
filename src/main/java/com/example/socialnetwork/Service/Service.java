@@ -116,7 +116,6 @@ public class Service implements Observable<UserAddedEvent> {
         userId++;
 
         if(userRepository.save(user) == null){
-            System.out.println("Notify");
             notifyObservers(new UserAddedEvent(ChangeEventType.ADD,getAllUsers()));
             return null;
         }
@@ -420,8 +419,11 @@ public class Service implements Observable<UserAddedEvent> {
 
     public FriendRequest deleteFriendRequest(FriendRequest friendRequest)
     {
-        notifyObservers(new UserAddedEvent(ChangeEventType.DELETE,getAllUsers()));
-        return friendRequestRepository.delete(friendRequest.getId());
+        if(friendRequestRepository.delete(friendRequest.getId()) != null) {
+            notifyObservers(new UserAddedEvent(ChangeEventType.DELETE, getAllUsers()));
+            return friendRequest;
+        }
+        return null;
     }
 
     public void getFriendshipsOfUserByMonth(String username, int monthNumber){
