@@ -33,8 +33,8 @@ public class ReceivedItemController extends Controller{
         try{
             srv.answerRequest(friend.getUsername(), user.getUsername(), "Y");
             //System.out.println("Answer sent!");
-            user = srv.getUserByUsername(user.getUsername());
-            menuController.initReceivedFriendRequest(user);
+            //user = srv.getUserByUsername(user.getUsername());
+            //menuController.initReceivedFriendRequest(user);
         }catch (IllegalArgumentException | ValidationException ex) {
             System.out.println(ex.toString());
         }
@@ -44,8 +44,8 @@ public class ReceivedItemController extends Controller{
         try{
             srv.answerRequest(friend.getUsername(), user.getUsername(), "N");
             //System.out.println("Answer sent!");
-            user = srv.getUserByUsername(user.getUsername());
-            menuController.initReceivedFriendRequest(user);
+            //user = srv.getUserByUsername(user.getUsername());
+            //menuController.initReceivedFriendRequest(user);
         }catch (IllegalArgumentException | ValidationException ex) {
             System.out.println(ex.toString());
         }

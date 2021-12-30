@@ -72,9 +72,14 @@ public class MenuController extends Controller implements com.example.socialnetw
     }
 
     public void init(User user) {
+        srv.addObserver(this);
         setUser(user);
         initOverview(user);
         pnlOverview.toFront();
+
+        initSearch(user);
+        initSentFriendRequest(user);
+        initReceivedFriendRequest(user);
     }
 
     private void initOverview(User user){
@@ -151,22 +156,22 @@ public class MenuController extends Controller implements com.example.socialnetw
 
     public void handleClicks(ActionEvent actionEvent){
         if (actionEvent.getSource() == btnSearch) {
-            initSearch(user);
+            //initSearch(user);
             pnlSearch.toFront();
         }
         if (actionEvent.getSource() == btnOverview) {
-            user = srv.getUserByUsername(user.getUsername());
-            init(user);
-            initOverview(user);
+            //user = srv.getUserByUsername(user.getUsername());
+            //init(user);
+            //initOverview(user);
             pnlOverview.toFront();
         }
         if (actionEvent.getSource() == btnSentFriendRequest) {
-            initSentFriendRequest(user);
+            //initSentFriendRequest(user);
             pnlSentFriendRequest.toFront();
         }
         if (actionEvent.getSource() == btnReceivedFriendRequest) {
-            initReceivedFriendRequest(user);
-            user = srv.getUserByUsername(user.getUsername());
+            //initReceivedFriendRequest(user);
+            //user = srv.getUserByUsername(user.getUsername());
             pnlReceivedFriendRequest.toFront();
         }
             /*if (actionEvent.getSource() == btnMenus) {
@@ -193,8 +198,9 @@ public class MenuController extends Controller implements com.example.socialnetw
 
     @Override
     public void update(UserAddedEvent userAddedEvent) {
+        System.out.println("Update");
         user = srv.getUserByUsername(user.getUsername());
-        init(user);
+        setUser(user);
         initOverview(user);
         initSearch(user);
         initSentFriendRequest(user);
