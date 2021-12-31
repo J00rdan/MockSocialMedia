@@ -701,8 +701,8 @@
                         </VBox>
                      </content>
                   </ScrollPane>
-                  <TextField layoutX="14.0" layoutY="502.0" prefHeight="38.0" prefWidth="612.0" promptText="search" style="-fx-background-color: #02030A; -fx-border-color: #B7C3D7; -fx-border-radius: 2em;" />
-                  <Button fx:id="btnSendMessage" alignment="BASELINE_LEFT" graphicTextGap="10.0" layoutX="641.0" layoutY="500.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="119.0" stylesheets="@style2.css" text="Send">
+                  <TextField fx:id="messageField" layoutX="14.0" layoutY="502.0" prefHeight="38.0" prefWidth="612.0" promptText="search" style="-fx-background-color: #02030A; -fx-border-color: #B7C3D7; -fx-border-radius: 2em;" />
+                  <Button fx:id="btnSendMessage" alignment="BASELINE_LEFT" graphicTextGap="10.0" layoutX="641.0" layoutY="500.0" mnemonicParsing="false" onAction="#sendMessage" prefHeight="42.0" prefWidth="119.0" stylesheets="@style2.css" text="Send">
                      <graphic>
                         <ImageView fitHeight="23.0" fitWidth="27.0" pickOnBounds="true" preserveRatio="true">
                            <image>

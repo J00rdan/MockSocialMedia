@@ -3,6 +3,7 @@ package com.example.socialnetwork.Controller;
 import com.example.socialnetwork.Controller.Controller;
 import com.example.socialnetwork.Domain.FriendRequest;
 import com.example.socialnetwork.Domain.FriendRequestDTO;
+import com.example.socialnetwork.Domain.Message;
 import com.example.socialnetwork.Domain.User;
 import com.example.socialnetwork.Domain.Validator.ValidationException;
 import com.example.socialnetwork.Utils.Events.UserAddedEvent;
@@ -79,7 +80,8 @@ public class MenuController extends Controller implements com.example.socialnetw
     public VBox pnMessages;
     @FXML
     public VBox pnChatRoomMessages;
-
+    @FXML
+    public TextField messageField;
 
     private void setUser(User user){
         this.user = user;
@@ -186,6 +188,34 @@ public class MenuController extends Controller implements com.example.socialnetw
     public void initChatRoom(User user, User friend){
         friendNameChat.setText(friend.getUsername());
 
+        loadChatRoomMessages(user, friend);
+
+        pnlChatRoom.toFront();
+    }
+
+    public void sendMessage(){
+        User friend = srv.getUserByUsername(friendNameChat.getText());
+
+        List<Message> conversation = srv.messagesBetween2Users(user.getUsername(), friend.getUsername());
+        conversation = srv.sortConversationsByDate(conversation);
+
+        List<Long> receivers = new ArrayList<>();
+        receivers.add(friend.getId());
+
+        if(conversation.size() == 0){
+            srv.addMessage(this.user.getId(),receivers,messageField.getText(),null);
+        }
+        else{
+            Long idToReply = conversation.get(conversation.size() - 1).getId();
+            srv.addMessage(this.user.getId(),receivers,messageField.getText(),idToReply);
+        }
+
+        messageField.clear();
+        loadChatRoomMessages(user, friend);
+
+    }
+
+    private void loadChatRoomMessages(User user, User friend){
         pnChatRoomMessages.getChildren().clear();
 
         try {
@@ -195,8 +225,6 @@ public class MenuController extends Controller implements com.example.socialnetw
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        pnlChatRoom.toFront();
     }
 
 
