@@ -3,10 +3,13 @@ package com.example.socialnetwork.Controller;
 import com.example.socialnetwork.Controller.Controller;
 import com.example.socialnetwork.Domain.FriendRequest;
 import com.example.socialnetwork.Domain.FriendRequestDTO;
+import com.example.socialnetwork.Domain.Message;
 import com.example.socialnetwork.Domain.User;
 import com.example.socialnetwork.Domain.Validator.ValidationException;
+import com.example.socialnetwork.Utils.Events.UserAddedEvent;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -16,46 +19,246 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
 
-public class MenuController extends Controller {
+public class MenuController extends Controller implements com.example.socialnetwork.Utils.Observer.Observer<UserAddedEvent> {
     User user;
 
+    @FXML
+    public Label errorLabel;
     @FXML
     public Label usernameLabel;
     @FXML
     public Label numberOfFriends;
     @FXML
+    public Label numberOfUsers;
+    @FXML
+    public Label numberOfSentFriendRequest;
+    @FXML
+    public Label numberOfReceivedFriendRequest;
+    @FXML
+    public Label numberOfMessages;
+    @FXML
+    public Label friendNameChat;
+    @FXML
     public Button btnLogout;
     @FXML
+    public Button btnOverview;
+    @FXML
+    public Button btnSearch;
+    @FXML
+    public Button btnSentFriendRequest;
+    @FXML
+    public Button btnReceivedFriendRequest;
+    @FXML
+    public Button btnMessages;
+    @FXML
+    public Pane pnlSearch;
+    @FXML
+    public Pane pnlOverview;
+    @FXML
+    public Pane pnlSentFriendRequest;
+    @FXML
+    public Pane pnlReceivedFriendRequest;
+    @FXML
+    public Pane pnlMessages;
+    @FXML
+    public Pane pnlChatRoom;
+    @FXML
     public VBox pnItems;
+    @FXML
+    public VBox pnItemsFriend;
+    @FXML
+    public VBox pnSentItems;
+    @FXML
+    public VBox pnReceivedItems;
+    @FXML
+    public VBox pnMessages;
+    @FXML
+    public VBox pnChatRoomMessages;
+    @FXML
+    public TextField messageField;
 
     private void setUser(User user){
         this.user = user;
         usernameLabel.setText(user.getUsername());
-        numberOfFriends.setText(String.valueOf(user.getFriends().size()));
     }
 
-    public void init(User user) throws IOException {
-        pnItems.getChildren().clear();
-        setUser(user);
+    public void setErrorLabel(String text){
+        errorLabel.setText(text);
+    }
 
-        for(Node node: gui.loadFriends(user)){
-            pnItems.getChildren().add(node);
+    public void init(User user) {
+        srv.addObserver(this);
+        setUser(user);
+        initOverview(user);
+        pnlOverview.toFront();
+
+        initSearch(user);
+        initSentFriendRequest(user);
+        initReceivedFriendRequest(user);
+        initMessages(user);
+    }
+
+    private void initOverview(User user){
+        numberOfFriends.setText(String.valueOf(user.getFriends().size()));
+
+        pnItems.getChildren().clear();
+
+        try {
+            for(Node node: gui.loadFriends(user)){
+                pnItems.getChildren().add(node);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initSearch(User user){
+        int count = 0;
+        for(User u:srv.getAllUsers())
+            count++;
+
+        numberOfUsers.setText(String.valueOf(count));
+
+
+        pnItemsFriend.getChildren().clear();
+
+        try {
+            for(Node node: gui.loadUsers(count, user)){
+                pnItemsFriend.getChildren().add(node);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void initSentFriendRequest(User user){
+        int count = 0;
+        for(FriendRequest fr: srv.getSentFriendRequest(user))
+            count++;
+
+        numberOfSentFriendRequest.setText(String.valueOf(count));
+
+
+        pnSentItems.getChildren().clear();
+
+        try {
+            for(Node node: gui.loadSentFriendRequest(count, user)){
+                pnSentItems.getChildren().add(node);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void initReceivedFriendRequest(User user){
+        int count = 0;
+        for(FriendRequest fr: srv.getReceivedFriendRequest(user))
+            count++;
+
+        numberOfReceivedFriendRequest.setText(String.valueOf(count));
+
+
+        pnReceivedItems.getChildren().clear();
+
+        try {
+            for(Node node: gui.loadReceivedFriendRequest(count, user)){
+                pnReceivedItems.getChildren().add(node);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void initMessages(User user){
+        numberOfMessages.setText(String.valueOf(user.getFriends().size()));
+
+        pnMessages.getChildren().clear();
+
+        try {
+            for(Node node: gui.loadMessages(user)){
+                pnMessages.getChildren().add(node);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void initChatRoom(User user, User friend){
+        friendNameChat.setText(friend.getUsername());
+
+        loadChatRoomMessages(user, friend);
+
+        pnlChatRoom.toFront();
+    }
+
+    public void sendMessage(){
+        User friend = srv.getUserByUsername(friendNameChat.getText());
+
+        List<Message> conversation = srv.messagesBetween2Users(user.getUsername(), friend.getUsername());
+        conversation = srv.sortConversationsByDate(conversation);
+
+        List<Long> receivers = new ArrayList<>();
+        receivers.add(friend.getId());
+
+        if(conversation.size() == 0){
+            srv.addMessage(this.user.getId(),receivers,messageField.getText(),null);
+        }
+        else{
+            Long idToReply = conversation.get(conversation.size() - 1).getId();
+            srv.addMessage(this.user.getId(),receivers,messageField.getText(),idToReply);
+        }
+
+        messageField.clear();
+        loadChatRoomMessages(user, friend);
+
+    }
+
+    private void loadChatRoomMessages(User user, User friend){
+        pnChatRoomMessages.getChildren().clear();
+
+        try {
+            for(Node node: gui.loadChatRoomMessages(user, friend)){
+                pnChatRoomMessages.getChildren().add(node);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
 
-    public void handleClicks(){
-
+    public void handleClicks(ActionEvent actionEvent){
+        if (actionEvent.getSource() == btnSearch) {
+            //initSearch(user);
+            pnlSearch.toFront();
+        }
+        if (actionEvent.getSource() == btnOverview) {
+            //user = srv.getUserByUsername(user.getUsername());
+            //init(user);
+            //initOverview(user);
+            pnlOverview.toFront();
+        }
+        if (actionEvent.getSource() == btnSentFriendRequest) {
+            //initSentFriendRequest(user);
+            pnlSentFriendRequest.toFront();
+        }
+        if (actionEvent.getSource() == btnReceivedFriendRequest) {
+            //initReceivedFriendRequest(user);
+            //user = srv.getUserByUsername(user.getUsername());
+            pnlReceivedFriendRequest.toFront();
+        }
+        if (actionEvent.getSource() == btnMessages) {
+            //initReceivedFriendRequest(user);
+            //user = srv.getUserByUsername(user.getUsername());
+            pnlMessages.toFront();
+        }
     }
 
     public void logout(){
@@ -64,6 +267,18 @@ public class MenuController extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void update(UserAddedEvent userAddedEvent) {
+        System.out.println("Update");
+        user = srv.getUserByUsername(user.getUsername());
+        setUser(user);
+        initOverview(user);
+        initSearch(user);
+        initSentFriendRequest(user);
+        initReceivedFriendRequest(user);
+        initMessages(user);
     }
 
     /*ObservableList<User> friendModel = FXCollections.observableArrayList();
