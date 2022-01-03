@@ -31,6 +31,8 @@ public class MenuController extends Controller implements com.example.socialnetw
     User user;
 
     @FXML
+    public Label errorLabel;
+    @FXML
     public Label usernameLabel;
     @FXML
     public Label numberOfFriends;
@@ -86,6 +88,10 @@ public class MenuController extends Controller implements com.example.socialnetw
     private void setUser(User user){
         this.user = user;
         usernameLabel.setText(user.getUsername());
+    }
+
+    public void setErrorLabel(String text){
+        errorLabel.setText(text);
     }
 
     public void init(User user) {

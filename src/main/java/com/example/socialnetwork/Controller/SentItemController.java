@@ -31,5 +31,8 @@ public class SentItemController extends Controller{
             srv.deleteFriendRequest(friendRequest);
             //menuController.initSentFriendRequest(user);
         }
+        else{
+            menuController.setErrorLabel("Friend Request already answered!");
+        }
     }
 }
