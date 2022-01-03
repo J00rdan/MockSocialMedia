@@ -3,6 +3,7 @@ package com.example.socialnetwork.Controller;
 import com.example.socialnetwork.Controller.Controller;
 import com.example.socialnetwork.Domain.FriendRequest;
 import com.example.socialnetwork.Domain.FriendRequestDTO;
+import com.example.socialnetwork.Domain.Message;
 import com.example.socialnetwork.Domain.User;
 import com.example.socialnetwork.Domain.Validator.ValidationException;
 import com.example.socialnetwork.Utils.Events.UserAddedEvent;
@@ -30,6 +31,8 @@ public class MenuController extends Controller implements com.example.socialnetw
     User user;
 
     @FXML
+    public Label errorLabel;
+    @FXML
     public Label usernameLabel;
     @FXML
     public Label numberOfFriends;
@@ -39,6 +42,10 @@ public class MenuController extends Controller implements com.example.socialnetw
     public Label numberOfSentFriendRequest;
     @FXML
     public Label numberOfReceivedFriendRequest;
+    @FXML
+    public Label numberOfMessages;
+    @FXML
+    public Label friendNameChat;
     @FXML
     public Button btnLogout;
     @FXML
@@ -50,6 +57,8 @@ public class MenuController extends Controller implements com.example.socialnetw
     @FXML
     public Button btnReceivedFriendRequest;
     @FXML
+    public Button btnMessages;
+    @FXML
     public Pane pnlSearch;
     @FXML
     public Pane pnlOverview;
@@ -58,6 +67,10 @@ public class MenuController extends Controller implements com.example.socialnetw
     @FXML
     public Pane pnlReceivedFriendRequest;
     @FXML
+    public Pane pnlMessages;
+    @FXML
+    public Pane pnlChatRoom;
+    @FXML
     public VBox pnItems;
     @FXML
     public VBox pnItemsFriend;
@@ -65,10 +78,20 @@ public class MenuController extends Controller implements com.example.socialnetw
     public VBox pnSentItems;
     @FXML
     public VBox pnReceivedItems;
+    @FXML
+    public VBox pnMessages;
+    @FXML
+    public VBox pnChatRoomMessages;
+    @FXML
+    public TextField messageField;
 
     private void setUser(User user){
         this.user = user;
         usernameLabel.setText(user.getUsername());
+    }
+
+    public void setErrorLabel(String text){
+        errorLabel.setText(text);
     }
 
     public void init(User user) {
@@ -80,6 +103,7 @@ public class MenuController extends Controller implements com.example.socialnetw
         initSearch(user);
         initSentFriendRequest(user);
         initReceivedFriendRequest(user);
+        initMessages(user);
     }
 
     private void initOverview(User user){
@@ -153,6 +177,62 @@ public class MenuController extends Controller implements com.example.socialnetw
         }
     }
 
+    public void initMessages(User user){
+        numberOfMessages.setText(String.valueOf(user.getFriends().size()));
+
+        pnMessages.getChildren().clear();
+
+        try {
+            for(Node node: gui.loadMessages(user)){
+                pnMessages.getChildren().add(node);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void initChatRoom(User user, User friend){
+        friendNameChat.setText(friend.getUsername());
+
+        loadChatRoomMessages(user, friend);
+
+        pnlChatRoom.toFront();
+    }
+
+    public void sendMessage(){
+        User friend = srv.getUserByUsername(friendNameChat.getText());
+
+        List<Message> conversation = srv.messagesBetween2Users(user.getUsername(), friend.getUsername());
+        conversation = srv.sortConversationsByDate(conversation);
+
+        List<Long> receivers = new ArrayList<>();
+        receivers.add(friend.getId());
+
+        if(conversation.size() == 0){
+            srv.addMessage(this.user.getId(),receivers,messageField.getText(),null);
+        }
+        else{
+            Long idToReply = conversation.get(conversation.size() - 1).getId();
+            srv.addMessage(this.user.getId(),receivers,messageField.getText(),idToReply);
+        }
+
+        messageField.clear();
+        loadChatRoomMessages(user, friend);
+
+    }
+
+    private void loadChatRoomMessages(User user, User friend){
+        pnChatRoomMessages.getChildren().clear();
+
+        try {
+            for(Node node: gui.loadChatRoomMessages(user, friend)){
+                pnChatRoomMessages.getChildren().add(node);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void handleClicks(ActionEvent actionEvent){
         if (actionEvent.getSource() == btnSearch) {
@@ -174,18 +254,11 @@ public class MenuController extends Controller implements com.example.socialnetw
             //user = srv.getUserByUsername(user.getUsername());
             pnlReceivedFriendRequest.toFront();
         }
-            /*if (actionEvent.getSource() == btnMenus) {
-                pnlMenus.setStyle("-fx-background-color : #53639F");
-                pnlMenus.toFront();
-            }
-            if (actionEvent.getSource() == btnOverview) {
-                pnlOverview.setStyle("-fx-background-color : #02030A");
-                pnlOverview.toFront();
-            }
-            if(actionEvent.getSource()==btnOrders) {
-                pnlOrders.setStyle("-fx-background-color : #464F67");
-                pnlOrders.toFront();
-            }*/
+        if (actionEvent.getSource() == btnMessages) {
+            //initReceivedFriendRequest(user);
+            //user = srv.getUserByUsername(user.getUsername());
+            pnlMessages.toFront();
+        }
     }
 
     public void logout(){
@@ -205,6 +278,7 @@ public class MenuController extends Controller implements com.example.socialnetw
         initSearch(user);
         initSentFriendRequest(user);
         initReceivedFriendRequest(user);
+        initMessages(user);
     }
 
     /*ObservableList<User> friendModel = FXCollections.observableArrayList();

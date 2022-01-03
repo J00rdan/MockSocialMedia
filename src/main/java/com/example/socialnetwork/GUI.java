@@ -24,6 +24,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 public class GUI extends Application {
     private Service srv;
@@ -103,6 +104,69 @@ public class GUI extends Application {
             ItemController itemController = fxmlLoader.getController();
             itemController.setService(srv, this);
             itemController.init(user, friend, menuController);
+
+            nodes[i].setOnMouseEntered(event -> {
+                nodes[j].setStyle("-fx-background-color : #0A0E3F");
+            });
+            nodes[i].setOnMouseExited(event -> {
+                nodes[j].setStyle("-fx-background-color : #02030A");
+            });
+
+            i++;
+
+        }
+        return nodes;
+    }
+
+    public Node[] loadMessages(User user) throws IOException{
+        Node[] nodes = new Node[user.getFriends().size()];
+
+        int i = 0;
+
+        for(long id:user.getFriends()){
+            final int j = i;
+
+            User friend = srv.getUserByID(id);
+
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("MessageItem.fxml"));
+            nodes[i] = fxmlLoader.load();
+
+            MessageItemController itemController = fxmlLoader.getController();
+            itemController.setService(srv, this);
+            itemController.init(user, friend, menuController);
+
+            nodes[i].setOnMouseEntered(event -> {
+                nodes[j].setStyle("-fx-background-color : #0A0E3F");
+            });
+            nodes[i].setOnMouseExited(event -> {
+                nodes[j].setStyle("-fx-background-color : #02030A");
+            });
+
+            i++;
+
+        }
+        return nodes;
+    }
+
+    public Node[] loadChatRoomMessages(User user, User friend) throws IOException{
+        List<Message> conversation = srv.messagesBetween2Users(user.getUsername(), friend.getUsername());
+        conversation = srv.sortConversationsByDate(conversation);
+
+        Node[] nodes = new Node[conversation.size()];
+
+        int i = 0;
+
+        for(Message m: conversation){
+            final int j = i;
+
+            //User friend = srv.getUserByID(id);
+
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("ChatRoomMessageItem.fxml"));
+            nodes[i] = fxmlLoader.load();
+
+            ChatRoomMessageItemController itemController = fxmlLoader.getController();
+            itemController.setService(srv, this);
+            itemController.init(user, friend, srv.getUserById(m.getFrom()), m, menuController);
 
             nodes[i].setOnMouseEntered(event -> {
                 nodes[j].setStyle("-fx-background-color : #0A0E3F");
